@@ -65,23 +65,28 @@ static char tree_look_for_close_bracket(char** pointer)
         return 0;
 }
 
-tree_operations tree_check_operation(char str)
+tree_operations tree_check_operation(char *str)
 {
-    if (str == '+')
+    if      (*str == '+')
         return OP_PLUS;
-    else if (str == '-')
+    else if (*str == '-')
         return OP_SUB;
-    else if (str == '*')
+    else if (*str == '*')
         return OP_MUL;
-    else if (str == '/')
+    else if (*str == '/')
         return OP_DIV;
-    else if (str == '^')
+    else if (*str == '^')
         return OP_POW;
-    else if (str == 's')
-        return OP_SIN;
-    else if (str == 'c')
+    else if (*str == 's')
+    {
+        if (*(str+1) == 'i')
+            return OP_SIN;
+        else
+            return OP_SQRT;
+    }
+    else if (*str == 'c')
         return OP_COS;
-    else if (str == 'l')
+    else if (*str == 'l')
         return OP_LN;
     else
         return NO_OP;
@@ -111,7 +116,6 @@ Diff_tree* tree_read_from_base(Catalog *base)
     for (long long i = 0; i < nodes_amount; i++)
     {
         long long open_bracket_counter = 0;
-        //printf("index at the beginning %lld\n", current_index);
         while (true)
         {
             current_stop = tree_skip_space(current_stop, &length_went);
@@ -126,15 +130,15 @@ Diff_tree* tree_read_from_base(Catalog *base)
         for (long long j = 0; j < open_bracket_counter - 1; j++)
             tree_insert_operation(new_tree, &current_index, OP_PLUS);
 
-        //printf("zero index %ld\n", current_index);
-
-        //Считываем число, не получилось - символ. Пока без sqrt!!!! 
         length_went = sscanf(current_stop, "%lg", &number);
         if (length_went == 0)
         {
             symbol = *current_stop;
+
             if (symbol != ')')
+            {
                 input_type = VARIABLE;
+            }
             else
                 input_type = OPERATION;
         }
@@ -148,13 +152,11 @@ Diff_tree* tree_read_from_base(Catalog *base)
         }
         else
         {
-            printf("number inputted %lg, %d\n", number, length_went);
             tree_insert_number(new_tree, &current_index, number);
             current_stop += length_went;
         }
 
         current_stop = tree_skip_letters(current_stop);
-        //printf("first index %ld\n", current_index);
         
         while (tree_look_for_close_bracket(&current_stop))
         {
@@ -166,15 +168,13 @@ Diff_tree* tree_read_from_base(Catalog *base)
         char str[MAX_OP_LEN] = "";
         if (current_stop && current_index != ABSENT)
         {
-            tree_operations result = tree_check_operation(*current_stop);
+            tree_operations result = tree_check_operation(current_stop);
             tree_change_operation(new_tree, current_index, result);
             current_stop++;
             i++;
         }
         current_stop = tree_skip_letters(current_stop);
         current_stop = tree_skip_space(current_stop, &length_went);
-        //current_stop++; //вроде необязательно
-        //printf("second index %ld\n", current_index);
     }
 
     return new_tree;
