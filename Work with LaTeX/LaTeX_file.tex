@@ -1,0 +1,300 @@
+\documentclass{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.9}
+\textheight=24cm
+\textwidth=17cm
+\oddsidemargin=-30pt
+\topmargin=-2cm
+\parskip=5pt
+\begin{document}
+\begin{center}
+{\bf MIPT 2020 presents}
+
+
+
+ \begin{Huge}
+{\bf <<Bad mathematitian taking deprivatives>>}
+ \end{Huge} 
+
+$\copyright$ Annnna Savchuk
+\end{center}
+{\bf Introduction}
+
+My name is Anna Savchuk and in this paper I will present to caring reader the process of artificial intelligence training to calculate deprivatives. The problems of calculating difficult expression is widely spread specially among \sout{us} first year students, so as their representative I decided to make a program that will be able to differentiate and easily simplify mathematical expressions.
+
+Differentiating complex expressions I reffer to MIPT lections and textbooks but nothing can save me from making mistakes so I must apologize for making some simple calculations. In my defense I can say that they train attention and write derivatives of simple functions into the subconscious. In my work I'll break down a big expression, simplify it, take a derivative and look at it. This process can go on endlessly, but even this is a great success for me.
+
+\begin{flushleft}
+{\bf We are going to work with this expression, but before we'll simplify it:}
+\end{flushleft}
+$$sin\left(5 \cdot x\right)+cosx^5$$
+\begin{flushleft}
+{\bf So it looks like this:}
+\end{flushleft}
+\begin{center}\begin{tikzpicture}
+\begin{axis}
+\addplot coordinates {
+(1, -0.418622)
+(1.1, -0.745244)
+(1.2, -1.07351)
+(1.3, -0.626059)
+(1.4, 1.27472)
+(1.5, 1.1953)
+(1.6, 0.501343)
+(1.7, 0.737123)
+(1.8, 1.41105)
+(1.9, 0.856542)
+(2, 0.290202)
+(2.1, -1.8797)
+(2.2, -0.704509)
+(2.3, -0.836243)
+(2.4, -1.00223)
+(2.5, -1.03092)
+(2.6, 1.26381)
+(2.7, 1.32357)
+(2.8, 0.215503)
+(2.9, 0.319546)
+(3, 0.194346)
+(3.1, -0.712012)
+(3.2, -1.10978)
+(3.3, -0.93552)
+(3.4, -1.34538)
+(3.5, -1.81603)
+(3.6, -0.656303)
+(3.7, -1.00065)
+(3.8, 0.933493)
+(3.9, -0.21702)
+(4, 1.9003)
+(4.1, 0.222841)
+(4.2, 1.83661)
+(4.3, 1.45532)
+(4.4, -0.993768)
+(4.5, -0.880673)
+(4.6, -0.535667)
+(4.7, -0.00190185)
+(4.8, -1.88402)
+(4.9, -1.4871)
+(5, -0.765881)
+(5.1, 1.06731)
+(5.2, 1.51882)
+(5.3, 0.0994403)
+(5.4, 1.16736)
+(5.5, 1.69916)
+(5.6, -0.723499)
+(5.7, -0.941222)
+(5.8, -1.37411)
+(5.9, -0.419277)
+(6, -1.83625)
+(6.1, -0.585803)
+(6.2, 0.498942)
+(6.3, -0.913271)
+(6.4, 1.40632)
+(6.5, 0.347428)
+(6.6, 1.59176)
+(6.7, 1.12497)
+(6.8, 1.52808)
+(6.9, 0.162828)
+(7, 0.43929)
+(7.1, -1.80098)
+(7.2, -1.98604)
+(7.3, -1.72538)
+(7.4, -1.18609)
+(7.5, 0.235943)
+(7.6, -0.561059)
+(7.7, 1.7107)
+(7.8, 1.83791)
+(7.9, 0.741051)
+(8, 1.11805)
+(8.1, -0.435276)
+(8.2, -1.1574)
+(8.3, -0.174844)
+(8.4, 0.0349432)
+(8.5, -0.751196)
+(8.6, 0.0489694)
+(8.7, -1.21257)
+(8.8, 0.770637)
+(8.9, 0.14648)
+(9, 1.78122)
+(9.1, 1.18631)
+(9.2, 0.124241)
+(9.3, 0.745082)
+(9.4, -0.817928)
+(9.5, 0.418566)
+(9.6, 0.162608)
+(9.7, -0.535531)
+(9.8, -1.52256)
+(9.9, -1.68221)
+(10, -1.26174)
+};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\begin{flushleft}
+{\bf Let's find deprivative for this expression:}
+\end{flushleft}
+$$sin\left(5 \cdot x\right)+cosx^5$$
+The show must go on
+$$\left(sin\left(5 \cdot x\right)\right)'$$
+We pretend that we can calculate derivatives:
+$$\left(5 \cdot x\right)'$$
+We pretend that we can calculate derivatives:
+$$5'$$
+Just do it!
+$$x'$$
+It may look strange but I hope that's right
+$$0 \cdot x+1 \cdot 5$$
+It may look strange but I hope that's right
+$$\left(0 \cdot x+1 \cdot 5\right) \cdot cos\left(5 \cdot x\right)$$
+We pretend that we can calculate derivatives:
+$$\left(cosx^5\right)'$$
+We pretend that we can calculate derivatives:
+$$\left(x^5\right)'$$
+It may look strange but I hope that's right
+$$5'$$
+We pretend that we can calculate derivatives:
+$$x'$$
+mATAN is my whole life!
+$$0 \cdot logx+\frac{1}{x} \cdot 5$$
+mATAN is my whole life!
+$$\left(0 \cdot logx+\frac{1}{x} \cdot 5\right) \cdot \left( -1 \right) \cdot sinx^5$$
+\begin{flushleft}
+{\bf So, I'll try to simplify it, let's believe in my success}
+\end{flushleft}
+$$\left(0 \cdot x+1 \cdot 5\right) \cdot cos\left(5 \cdot x\right)+\left(0 \cdot logx+\frac{1}{x} \cdot 5\right) \cdot \left( -1 \right) \cdot sinx^5$$
+With this program you don't need to be a genius to calculate the speed of me going mad
+$$\left(0 \cdot x+5\right) \cdot cos\left(5 \cdot x\right)+\left(0 \cdot logx+\frac{1}{x} \cdot 5\right) \cdot \left( -1 \right) \cdot sinx^5$$
+We pretend that we can calculate derivatives:
+$$\left(0+5\right) \cdot cos\left(5 \cdot x\right)+A, $$ where
+$$A = \left(0+\frac{1}{x} \cdot 5\right) \cdot \left( -1 \right) \cdot sinx^5$$
+The show must go on
+$$5 \cdot cos\left(5 \cdot x\right)+A, $$ where
+$$A = \left(0+\frac{1}{x} \cdot 5\right) \cdot \left( -1 \right) \cdot sinx^5$$
+The show must go on
+$$5 \cdot cos\left(5 \cdot x\right)+\frac{1}{x} \cdot 5 \cdot \left( -1 \right) \cdot sinx^5$$
+\begin{flushleft}
+{\bf Final deprivative is:}
+\end{flushleft}
+$$5 \cdot cos\left(5 \cdot x\right)+\frac{1}{x} \cdot 5 \cdot \left( -1 \right) \cdot sinx^5$$
+\begin{flushleft}
+{\bf Let's see how does it look like:}
+\end{flushleft}
+\begin{center}\begin{tikzpicture}
+\begin{axis}
+\addplot coordinates {
+(1, -2.78904)
+(1.1, -0.998522)
+(1.2, 2.2684)
+(1.3, 6.96277)
+(1.4, 6.57805)
+(1.5, -1.48792)
+(1.6, 2.00011)
+(1.7, -5.94569)
+(1.8, -4.68373)
+(1.9, -4.02995)
+(2, -5.57392)
+(2.1, -2.37696)
+(2.2, -2.14912)
+(2.3, 0.244282)
+(2.4, 6.06295)
+(2.5, 5.51643)
+(2.6, 5.56974)
+(2.7, 4.55663)
+(2.8, -0.444587)
+(2.9, -0.415562)
+(3, -2.31509)
+(3.1, -4.25441)
+(3.2, -5.67839)
+(3.3, -4.98873)
+(3.4, -2.73367)
+(3.5, 1.87144)
+(3.6, 1.91893)
+(3.7, 3.68024)
+(3.8, 4.12609)
+(3.9, 4.70815)
+(4, 2.23858)
+(4.1, -1.17001)
+(4.2, -2.75028)
+(4.3, -4.19972)
+(4.4, -5.19643)
+(4.5, -3.34505)
+(4.6, -1.63095)
+(4.7, -0.402422)
+(4.8, 2.33604)
+(4.9, 4.48569)
+(5, 4.1823)
+(5.1, 3.97446)
+(5.2, 2.6055)
+(5.3, 1.45891)
+(5.4, -0.55561)
+(5.5, -3.58563)
+(5.6, -4.71871)
+(5.7, -4.26218)
+(5.8, -3.13363)
+(5.9, -0.968634)
+(6, 1.21263)
+(6.1, 2.24342)
+(6.2, 4.22719)
+(6.3, 5.0412)
+(6.4, 4.57643)
+(6.5, 2.98784)
+(6.6, -0.677026)
+(6.7, -1.73335)
+(6.8, -4.27584)
+(6.9, -5.71234)
+(7, -4.16311)
+(7.1, -2.84979)
+(7.2, -0.56554)
+(7.3, 1.39924)
+(7.4, 4.39465)
+(7.5, 5.5019)
+(7.6, 4.43681)
+(7.7, 3.55855)
+(7.8, 1.02185)
+(7.9, -1.75589)
+(8, -3.9146)
+(8.1, -5.10688)
+(8.2, -4.90658)
+(8.3, -4.49375)
+(8.4, -2.18312)
+(8.5, 1.01224)
+(8.6, 2.50022)
+(8.7, 4.81061)
+(8.8, 4.6253)
+(8.9, 3.81819)
+(9, 2.83036)
+(9.1, 0.805026)
+(9.2, -1.81914)
+(9.3, -4.58869)
+(9.4, -5.14094)
+(9.5, -4.97597)
+(9.6, -3.39102)
+(9.7, -1.42876)
+(9.8, 1.08333)
+(9.9, 3.53165)
+(10, 4.80696)
+};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+{\bf My references:}
+\begin{itemize}
+
+\item Field for experiments
+
+ https://github.com/s-a-v-a-n-n-a/Differentiator
+
+\item Lections by Redkozubov V.V. 
+
+ https://www.youtube.com/playlist?list=PLthfp5exSWEoItZUXCG3Bhrn3AFzw8AKK
+
+\end{itemize}
+
+\end{document}
