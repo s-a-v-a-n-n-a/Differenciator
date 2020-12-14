@@ -1,20 +1,48 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #pragma once
 
 #include "diff_tree.h"
 
-const int tree_priorities[8] = { 4, 4, 3, 2, 2, 2, 2, 2 };
+#define DEFINE_OPS(name, number, tex_name, priority, differentiate, evaluate)\
+        priority,
+
+const int tree_priorities[10] = 
+{ 
+    #include "Operations.h"
+    /*5, //+
+    4, //-
+    3, //*
+    3, //div
+    2, //pow
+    2, //sin
+    2, //cos
+    2, //log
+    2, //sqrt
+    1 */
+};
+
+#undef DEFINE_OPS
+
+#define DEFINE_OPS(name, number, tex_name, priority, differentiate, evaluate)\
+        tex_name,
 
 const char* tree_operations_texts[] =
 {
-    "+",
+    #include "Operations.h"
+    /* "+",
     "-",
     "*",
     "/",
     "^",
     "sin",
     "cos",
-    "log"
+    "log",
+    "sqrt",
+    "'"*/
 };
+
+#undef DEFINE_OPS
 
 const char* tree_state_text[] =
 {
@@ -44,7 +72,7 @@ const char* TREE_FUNCTION_IDENTIFIERS[] =
     fprintf(stderr, "IN FILE %s\nIN LINE %d\n", __FILE__, __LINE__);     \
     tree_print_errors(code);
 
-//#define DEBUG
+#define DEBUG
 
 
 Diff_tree* tree_init(const long long amount)
@@ -133,8 +161,29 @@ void tree_copy_node(Diff_tree* copy_from, Diff_tree* copy_to, long long root_to_
 
 void tree_copy_branch(Diff_tree *copy_from, Diff_tree *copy_to, long long root_to_copy, long long where_to_copy)
 {
-    Stack* went_nodes = stack_new(copy_from->size);
+    if (tree_if_lief(copy_from, root_to_copy))
+    {
+        tree_copy_node(copy_from, copy_to, root_to_copy, &where_to_copy);
+        return;
+    }
 
+    long long right_son = tree_right_son(copy_from, root_to_copy);
+    long long left_son  = tree_left_son(copy_from, root_to_copy);
+
+    tree_copy_node(copy_from, copy_to, root_to_copy, &where_to_copy);
+
+    if (left_son != ABSENT)
+    {
+        tree_copy_branch(copy_from, copy_to, left_son, where_to_copy);
+    }
+
+    if (right_son != ABSENT)
+    {
+        tree_copy_branch(copy_from, copy_to, right_son, where_to_copy);
+    }
+    /*Stack* went_nodes = stack_new(copy_from->size);
+
+    stack_push(&went_nodes, ABSENT);
     stack_push(&went_nodes, ABSENT);
     stack_push(&went_nodes, ABSENT);
 
@@ -145,11 +194,22 @@ void tree_copy_branch(Diff_tree *copy_from, Diff_tree *copy_to, long long root_t
     int went_right = 2;
 
     tree_copy_node(copy_from, copy_to, root_to_copy, &where_to_copy);
-
+    printf("%lld\n", root_to_copy);
+    system("pause");
     if (!tree_if_lief(copy_from, root_to_copy))
     {
         while (counter_in_root <= went_right)
         {
+            printf("counter %d\n", counter_in_root);
+            if (copy_from->tree[root_to_copy].type == NUMBER)
+            {
+                printf("%lg\n", copy_from->tree[root_to_copy].number);
+            }
+            else if (copy_from->tree[root_to_copy].type == VARIABLE)
+                printf("%c\n", copy_from->tree[root_to_copy].variable);
+            else
+                printf("%s\n", tree_operations_texts[(int)(copy_from->tree[root_to_copy].operation)]);
+            system("pause");
             if (root_to_copy == root)
             {
                 counter_in_root++;
@@ -163,6 +223,7 @@ void tree_copy_branch(Diff_tree *copy_from, Diff_tree *copy_to, long long root_t
                 }
                 else
                     break;
+                printf("%lld\n", root_to_copy);
             }
 
             tree_copy_node(copy_from, copy_to, root_to_copy, &where_to_copy);
@@ -178,22 +239,41 @@ void tree_copy_branch(Diff_tree *copy_from, Diff_tree *copy_to, long long root_t
             if (left_son != ABSENT && last_index != left_son && index_before_last != left_son)
             {
                 root_to_copy = left_son;
+                //stack_push(&went_nodes, root_to_copy);
+                stack_dump(went_nodes, STACK_OK, STACK_PUSH_MESSAGE);
             }
-            else if (right_son != ABSENT && last_index != right_son) //если правого сына и уложат в стек, то после правого точно
+            else if (right_son != ABSENT && last_index != right_son) //РµСЃР»Рё РїСЂР°РІРѕРіРѕ СЃС‹РЅР° Рё СѓР»РѕР¶Р°С‚ РІ СЃС‚РµРє, С‚Рѕ РїРѕСЃР»Рµ РїСЂР°РІРѕРіРѕ С‚РѕС‡РЅРѕ
             {
                 root_to_copy = right_son;
+                //stack_push(&went_nodes, root_to_copy);
+                stack_dump(went_nodes, STACK_OK, STACK_PUSH_MESSAGE);
             }
             else
             {
+                if (tree_if_lief(copy_from, root_to_copy))
+                {
+                    stack_push(&went_nodes, ABSENT);
+                    stack_push(&went_nodes, ABSENT);
+                }
+                
+                stack_pop(&went_nodes, &last_index);
+                stack_pop(&went_nodes, &last_index);
+
+                if (root_to_copy == root)
+                    break;
                 stack_push(&went_nodes, root_to_copy);
 
+                stack_dump(went_nodes, STACK_OK, STACK_POP_MESSAGE);
+
                 root_to_copy = tree_parent(copy_from, root_to_copy);
+
                 where_to_copy = tree_parent(copy_to, where_to_copy);
             }
+            printf("%lld\n", root_to_copy);
         }
     }
-
-    stack_destruct(&went_nodes);
+    printf("HEREHEREHEREHEREHEREHEREHEREHERE\n");
+    stack_destruct(&went_nodes);*/
 }
 
 long long tree_parent(Diff_tree* dtree, long long index)
@@ -220,9 +300,63 @@ long long tree_left_son(Diff_tree* dtree, long long index)
         return index;
 }
 
+long long tree_go_up(Diff_tree* dtree, long long index, long long steps_amount)
+{
+    for (long long i = 0; i < steps_amount; i++)
+        index = tree_parent(dtree, index);
+
+    return index;
+}
+
+char tree_get_type(Diff_tree* dtree, long long index)
+{
+    return dtree->tree[index].type;
+}
+
+tree_operations tree_get_operation(Diff_tree* dtree, long long index)
+{
+    tree_code checking = tree_check_index(dtree, index);
+    if (checking != TREE_OK)
+        return NO_OP;
+    
+    if (tree_get_type(dtree, index) != OPERATION)
+        return NO_OP;
+
+    return dtree->tree[index].operation;
+}
+
+double tree_get_number(Diff_tree* dtree, long long index)
+{
+    tree_code checking = tree_check_index(dtree, index);
+    if (checking != TREE_OK)
+        return NAN;
+    
+    if (tree_get_type(dtree, index) != NUMBER)
+        return NAN;
+
+    return dtree->tree[index].number;
+}
+
+char tree_get_variable(Diff_tree* dtree, long long index)
+{
+    tree_code checking = tree_check_index(dtree, index);
+    if (checking != TREE_OK)
+        return 0;
+    
+    if (tree_get_type(dtree, index) != VARIABLE)
+        return 0;
+
+    return dtree->tree[index].variable;
+}
+
+long long tree_get_depth(Diff_tree* dtree, long long index)
+{
+    return dtree->tree[index].depth;
+}
+
 int tree_if_lief(Diff_tree* dtree, long long index)
 {
-    if (index > dtree->size || index < ABSENT)
+    if (index < ABSENT)
         return 0;
 
     if (tree_right_son(dtree, index) == ABSENT && tree_left_son(dtree, index) == ABSENT)
@@ -295,12 +429,12 @@ tree_code tree_change_operation(Diff_tree* dtree, long long index, tree_operatio
 
 tree_code tree_check_index(Diff_tree* dtree, long long index)
 {
-    if (index > dtree->size + 1)
+    /*if (index > dtree->size + 1)
     {
         ASSERTION(TREE_OVERFLOW);
         tree_dump(dtree, TREE_OVERFLOW, INSERTION);
         return TREE_OVERFLOW;
-    }
+    }*/
 
     if (dtree->size + 1 >= dtree->capacity)
     {
@@ -311,35 +445,6 @@ tree_code tree_check_index(Diff_tree* dtree, long long index)
 
     return TREE_OK;
 }
-
-//стоит сделать несколько таких, не только для операций????
-/*tree_code tree_insert_at_root(Diff_tree* dtree, char operation)
-{
-    tree_code checking = tree_check_index(dtree, dtree->root_index);
-    if (checking != TREE_OK)
-        return checking;
-
-    long long new_node_index = dtree->first_free;
-
-    dtree->tree[new_node_index].if_number = false;
-    dtree->tree[new_node_index].if_variable = false;
-    dtree->tree[new_node_index].if_operation = true;
-
-    dtree->tree[new_node_index].number = NAN;
-    dtree->tree[new_node_index].variable = 0;
-    dtree->tree[new_node_index].operation = operation;
-
-    dtree->tree[new_node_index].parent = ABSENT;
-    dtree->tree[new_node_index].left_son = dtree->root_index;
-    dtree->tree[new_node_index].right_son  = ABSENT;
-
-    dtree->root_index = new_node_index;
-    dtree->first_free = dtree->tree[new_node_index].next;
-
-    dtree->size++;
-
-    return TREE_OK;
-}*/
 
 tree_code tree_insert(Diff_tree* dtree, long long* index_after)
 {
@@ -504,7 +609,7 @@ static void tree_remove_branch(Diff_tree* dtree, long long branch_base)
 
 tree_code tree_clean_branch(Diff_tree* dtree, long long branch_base)
 {
-    if (branch_base > dtree->size || branch_base < ABSENT)
+    if (branch_base < ABSENT)
     {
         ASSERTION(TREE_UNDERFLOW);
         tree_dump(dtree, TREE_UNDERFLOW, REMOVING);
@@ -526,7 +631,7 @@ tree_code tree_clean_branch(Diff_tree* dtree, long long branch_base)
 
 tree_code tree_remove_knot(Diff_tree *dtree, long long knot, long long next_knot)
 {
-    if (knot > dtree->size || knot == ABSENT)
+    if (knot == ABSENT)
     {
         ASSERTION(TREE_UNDERFLOW);
         tree_dump(dtree, TREE_UNDERFLOW, REMOVING);
@@ -707,33 +812,25 @@ void tree_dot_call(const char* name_file, const char* expansion)
     system((char*)temp);
 }
 
-
-/*void tree_print_message_in_file(Diff_tree* dtree, long long index, FILE* picture)
-{
-    long long length = tree_message_length(dtree, index);
-    char* message = tree_message_beginnig(dtree, index);
-    for (size_t i = 0; i <= length; i++)
-        fprintf(picture, "%c", message[i]);
-}*/
-
 void tree_print_picture_nodes(Diff_tree* dtree, long long index, FILE* picture)
 {
 #ifdef DEBUG
     fprintf(picture, "  nod%lld[shape=\"none\", ", index);
     fprintf(picture, "label = <<table border = \"0\" cellborder = \"1\" cellspacing = \"0\">\n");
-    fprintf(picture, "      <tr>\n      <td colspan = \"2\" bgcolor = \"HotPink\">parent %lld</td>\n    </tr>\n", ctree->tree[index].parent);
+    fprintf(picture, "      <tr>\n      <td colspan = \"2\" bgcolor = \"HotPink\">parent %lld</td>\n    </tr>\n", dtree->tree[index].parent);
     fprintf(picture, "      <tr>\n      <td colspan = \"2\" bgcolor = \"%s\">index %lld</td>\n     </tr>\n", COLOR, index);
+    fprintf(picture, "      <tr>\n      <td colspan = \"2\" bgcolor = \"%s\">type %d</td>\n     </tr>\n", COLOR, dtree->tree[index].type);
     fprintf(picture, "      <tr>\n      <td colspan = \"2\" bgcolor = \"%s\">", COLOR);
-    if (ctree->tree[index].type == NUMBER)
-        fprintf(picture, "%lg", ctree->tree[index].number);
-    else if (ctree->tree[index].type == VARIABLE)
-        fprintf(picture, "%c", ctree->tree[index].variable);
-    else if (ctree->tree[index].type == OPERATION)
-        fprintf(picture, "%c", ctree->tree[index].operation);
+    if (dtree->tree[index].type == NUMBER)
+        fprintf(picture, "%lg", dtree->tree[index].number);
+    else if (dtree->tree[index].type == VARIABLE)
+        fprintf(picture, "%c", dtree->tree[index].variable);
+    else if (dtree->tree[index].type == OPERATION)
+        fprintf(picture, "%s", tree_operations_texts[dtree->tree[index].operation]);
     fprintf(picture, "</td>\n     </tr>\n");
     fprintf(picture, "      <tr>\n");
-    fprintf(picture, "          <td bgcolor = \"%s\">%lld</td>\n", COLOR_OTHER, ctree->tree[index].left_son);
-    fprintf(picture, "          <td bgcolor = \"%s\">%lld</td>\n", COLOR_OTHER, ctree->tree[index].right_son);
+    fprintf(picture, "          <td bgcolor = \"%s\">%lld</td>\n", COLOR_OTHER, dtree->tree[index].left_son);
+    fprintf(picture, "          <td bgcolor = \"%s\">%lld</td>\n", COLOR_OTHER, dtree->tree[index].right_son);
     fprintf(picture, "      </tr>\n");
     fprintf(picture, "      </table>>];\n");
 #else
@@ -745,7 +842,7 @@ void tree_print_picture_nodes(Diff_tree* dtree, long long index, FILE* picture)
     else if (dtree->tree[index].type == VARIABLE)
         fprintf(picture, "%c", dtree->tree[index].variable);
     else if (dtree->tree[index].type == OPERATION)
-        fprintf(picture, "%c", dtree->tree[index].operation);
+        fprintf(picture, "%s", tree_operations_texts[dtree->tree[index].operation]);
     fprintf(picture, "\"];\n");
 #endif
 }
@@ -812,5 +909,3 @@ void tree_print_picture(Diff_tree* dtree, const char* picture_name)
 
     tree_dot_call(picture_name, PICTURE_EXPANSION);
 }
-
-
