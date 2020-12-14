@@ -74,7 +74,7 @@ DEFINE_OPS(OP_SUB, 1, "-", 4,
 	value = left_value - right_value;
 })
 
-DEFINE_OPS(OP_MUL, 2, "\\cdot", 3,
+DEFINE_OPS(OP_MUL, 2, " \\cdot ", 3,
 {
 	current_index = DIFFERENTIATE_PLUS;
 
@@ -171,13 +171,17 @@ DEFINE_OPS(OP_POW, 4, "^", 2,
 DEFINE_OPS(OP_SIN, 5, "sin", 2,
 {
 	current_index = DIFFERNTIATE_MUL;
-	current_index = DIFFERENTIATE_COS;
-	current_index = DIFFERENTIATE_VALUE(ABSENT);
-	COPY_RIGHT;
-
-	current_index = tree_go_up(dtree, current_index, ONE_STEP);
 
 	DIFFERENTIATE_RIGHT;
+	//current_index = tree_go_up(dtree, current_index, ONE_STEP);
+
+	current_index = DIFFERENTIATE_COS;
+	current_index = DIFFERENTIATE_VALUE(ABSENT);
+	
+	current_index = tree_go_up(dtree, current_index, ONE_STEP);
+	COPY_RIGHT;
+
+	tree_dump(dtree, TREE_OK, DESTRUCTION);
 },
 
 {
@@ -188,16 +192,18 @@ DEFINE_OPS(OP_COS, 6, "cos", 2,
 {
 	current_index = DIFFERNTIATE_MUL;
 
+	DIFFERENTIATE_RIGHT;
+	//current_index = tree_go_up(dtree, current_index, TWO_STEPS);
+
 	current_index = DIFFERNTIATE_MUL;
 	current_index = DIFFERENTIATE_VALUE(ABSENT);
+	
+	current_index = tree_go_up(dtree, current_index, ONE_STEP);
 	current_index = DIFFERENTIATE_SIN;
+	
 	current_index = DIFFERENTIATE_VALUE(ABSENT);
-
+	current_index = tree_go_up(dtree, current_index, ONE_STEP);
 	COPY_RIGHT;
-
-	current_index = tree_go_up(dtree, current_index, TWO_STEPS);
-
-	DIFFERENTIATE_RIGHT;
 },
 
 {
@@ -216,10 +222,12 @@ DEFINE_OPS(OP_LN, 7, "log", 2,
 	value = log(right_value);
 })
 
-DEFINE_OPS(OP_SQRT, 8, "\\sqrt", 2,
+DEFINE_OPS(OP_SQRT, 8, " \\sqrt ", 2,
 {
 	current_index = DIFFERNTIATE_MUL;
-current_index = DIFFERENTIATE_VALUE(0.5);
+	current_index = DIFFERENTIATE_VALUE(0.5);
+	
+	current_index = tree_go_up(dtree, current_index, ONE_STEP);
 	DIFFERENTIATE_RIGHT;
 },
 

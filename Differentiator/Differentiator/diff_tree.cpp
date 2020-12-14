@@ -4,9 +4,13 @@
 
 #include "diff_tree.h"
 
+#define DEFINE_OPS(name, number, tex_name, priority, differentiate, evaluate)\
+        priority,
+
 const int tree_priorities[10] = 
 { 
-    4, //+
+    #include "Operations.h"
+    /*5, //+
     4, //-
     3, //*
     3, //div
@@ -15,12 +19,18 @@ const int tree_priorities[10] =
     2, //cos
     2, //log
     2, //sqrt
-    1 
+    1 */
 };
+
+#undef DEFINE_OPS
+
+#define DEFINE_OPS(name, number, tex_name, priority, differentiate, evaluate)\
+        tex_name,
 
 const char* tree_operations_texts[] =
 {
-    "+",
+    #include "Operations.h"
+    /* "+",
     "-",
     "*",
     "/",
@@ -29,8 +39,10 @@ const char* tree_operations_texts[] =
     "cos",
     "log",
     "sqrt",
-    "'"
+    "'"*/
 };
+
+#undef DEFINE_OPS
 
 const char* tree_state_text[] =
 {
@@ -799,15 +811,6 @@ void tree_dot_call(const char* name_file, const char* expansion)
     sprintf(temp, "dot %s -T%s -O", name_file, expansion);
     system((char*)temp);
 }
-
-
-/*void tree_print_message_in_file(Diff_tree* dtree, long long index, FILE* picture)
-{
-    long long length = tree_message_length(dtree, index);
-    char* message = tree_message_beginnig(dtree, index);
-    for (size_t i = 0; i <= length; i++)
-        fprintf(picture, "%c", message[i]);
-}*/
 
 void tree_print_picture_nodes(Diff_tree* dtree, long long index, FILE* picture)
 {

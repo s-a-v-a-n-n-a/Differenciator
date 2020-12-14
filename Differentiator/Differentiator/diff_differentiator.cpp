@@ -2,6 +2,33 @@
 
 #include "diff_differentiator.h"
 
+void work_with_expression()
+{
+	Diff_tree* dtree = tree_read_from_file(DEFAULT_FILE_NAME);
+
+	diff_print_formula_in_tex(dtree, dtree->root_index, NOT_END, IT_WAS_THAT, FORMULA);
+
+	diff_simplificate(dtree);
+
+	diff_print_formula_in_tex(dtree, dtree->root_index, NOT_END, FIRST_GRAPHICS, GRAPH);
+	diff_print_formula_in_tex(dtree, dtree->root_index, NOT_END, FIRST_DEPR, FORMULA);
+
+	Diff_tree* new_tree = tree_init(DEF_SIZE);
+	diff(dtree, new_tree, dtree->root_index, ABSENT);
+
+	diff_print_formula_in_tex(new_tree, new_tree->root_index, NOT_END, SIMPLIFIER, FORMULA);
+	diff_simplificate(new_tree);
+	tree_dump(new_tree, TREE_OK, DESTRUCTION);
+
+	diff_print_formula_in_tex(new_tree, new_tree->root_index, NOT_END, FINAL_ANSWER, FORMULA);
+	diff_print_formula_in_tex(new_tree, new_tree->root_index, END, GRAPHICS, GRAPH);
+
+	tree_tex_call();
+
+	tree_delete(dtree);
+	tree_delete(new_tree);
+}
+
 #define DEFINE_OPS(name, number, tex_name, priority, differentiate, evaluate)\
         case number:\
             evaluate;\
@@ -17,7 +44,7 @@ double evaluate_expr(Diff_tree* dtree, const long long index, double meaning)
 			return meaning;
 	}
 
-	long long left = tree_left_son(dtree, index);
+	long long left  = tree_left_son(dtree, index);
 	long long right = tree_right_son(dtree, index);
 
 	double left_value  = 0;
@@ -34,188 +61,14 @@ double evaluate_expr(Diff_tree* dtree, const long long index, double meaning)
 	switch (op)
 	{
 		#include "Operations.h"
-
 		default:
 			return ABSENT;
+			break;
 	}
 	return value;
 }
 
 #undef DEFINE_OPS
-
-/*
-long long diff_plus(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long long current_index)
-{
-	current_index = DIFFERENTIATE_PLUS
-	DIFFERENTIATE_LEFT
-	DIFFERENTIATE_RIGHT
-
-	return current_index;
-}
-
-long long diff_sub(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long long current_index)
-{
-	current_index = DIFFERENTIATE_MINUS
-	DIFFERENTIATE_LEFT
-	DIFFERENTIATE_RIGHT
-
-	return current_index;
-}
-
-long long diff_mul(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long long current_index)
-{
-	current_index = DIFFERENTIATE_PLUS
-
-	current_index = DIFFERNTIATE_MUL
-	DIFFERENTIATE_LEFT
-	COPY_RIGHT
-
-	current_index = tree_parent(dtree, current_index);
-
-	current_index = DIFFERNTIATE_MUL
-	DIFFERENTIATE_RIGHT
-	COPY_LEFT
-
-	return current_index;
-}
-
-long long diff_div(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long long current_index)
-{
-	current_index = DIFFERENTIATE_DIV
-
-	current_index = DIFFERENTIATE_MINUS
-
-	current_index = DIFFERNTIATE_MUL
-	DIFFERENTIATE_LEFT
-	COPY_RIGHT
-
-	current_index = tree_parent(dtree, current_index);
-
-	current_index = DIFFERNTIATE_MUL
-	DIFFERENTIATE_RIGHT
-	COPY_LEFT
-
-	current_index = tree_parent(dtree, tree_parent(dtree, current_index));
-
-	current_index = DIFFERNTIATE_MUL
-	COPY_RIGHT
-	COPY_RIGHT
-
-	return current_index;
-}
-
-long long diff_pow(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long long current_index)
-{
-	current_index = DIFFERNTIATE_MUL
-
-	current_index = DIFFERENTIATE_POW
-	current_index = DIFFERENTIATE_POW(exp(1))
-
-	current_index = tree_parent(dtree, current_index);
-
-	current_index = DIFFERNTIATE_MUL
-	COPY_RIGHT
-	current_index = DIFFERENTIATE_LOG
-	current_index = DIFFERENTIATE_POW(ABSENT)
-
-	current_index = tree_parent(dtree, current_index);
-	COPY_LEFT
-
-	current_index = tree_parent(dtree, current_index);
-	current_index = tree_parent(dtree, current_index);
-	current_index = tree_parent(dtree, current_index);
-
-	current_index = DIFFERENTIATE_PLUS
-	current_index = DIFFERNTIATE_MUL
-
-	DIFFERENTIATE_RIGHT
-
-	current_index = DIFFERENTIATE_LOG
-	current_index = DIFFERENTIATE_POW(ABSENT)
-
-	current_index = tree_parent(dtree, current_index);
-	COPY_LEFT
-
-	current_index = tree_parent(dtree, current_index);
-	current_index = tree_parent(dtree, current_index);
-
-	current_index = DIFFERNTIATE_MUL
-	current_index = DIFFERENTIATE_DIV
-
-	DIFFERENTIATE_LEFT
-
-	COPY_LEFT
-
-	current_index = tree_parent(dtree, current_index);
-	COPY_RIGHT
-
-	return current_index;
-}
-
-long long diff_ln(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long long current_index)
-{
-	current_index = DIFFERENTIATE_DIV;
-	DIFFERENTIATE_POW(1);
-	COPY_RIGHT;
-
-	return current_index;
-}
-
-long long diff_sin(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long long current_index)
-{
-	current_index = DIFFERNTIATE_MUL
-	current_index = DIFFERENTIATE_COS
-	DIFFERENTIATE_POW(ABSENT);
-	COPY_RIGHT
-
-	current_index = tree_parent(dtree, current_index);
-
-	DIFFERENTIATE_RIGHT
-
-	return current_index;
-}
-
-long long diff_cos(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long long current_index)
-{
-	current_index = DIFFERNTIATE_MUL
-
-	current_index = DIFFERNTIATE_MUL
-	DIFFERENTIATE_POW(ABSENT);
-	current_index = DIFFERENTIATE_SIN
-	DIFFERENTIATE_POW(ABSENT);
-
-	COPY_RIGHT
-
-	current_index = tree_parent(dtree, current_index);
-	current_index = tree_parent(dtree, current_index);
-
-	DIFFERENTIATE_RIGHT
-
-	return current_index;
-}
-
-long long diff_sqrt(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long long current_index)
-{
-	current_index = DIFFERNTIATE_MUL
-	DIFFERENTIATE_POW(0.5)
-	DIFFERENTIATE_RIGHT
-
-	return current_index;
-}
-
-long long diff_diff(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long long current_index)
-{
-	tree_clean_branch(dtree, dtree->tree[current_index].right_son);
-	DO_DIFFERENTIATION
-	tree_remove_knot(dtree, current_index, dtree->tree[current_index].right_son);
-	current_index = dtree->tree[current_index].right_son;
-
-	if (!tree_if_lief(dtree, current_index))
-		diff_print_formula_in_tex(dtree, current_index, 0, PROHIBITED_FOR_RANDOM_PHRASES_AMOUNT);
-
-	return current_index;
-}
-*/
 
 long long diff_create_new_lief(Diff_tree* dtree, const char type, double future_value, long long parent_index)
 {
@@ -256,38 +109,7 @@ void diff(Diff_tree* old_tree, Diff_tree* dtree, const long long branch, long lo
 	case OPERATION:
 		switch (tree_get_operation(old_tree, branch))
 		{
-		/*case OP_PLUS:
-			current_index = diff_plus(old_tree, dtree, branch, current_index);
-			break;
-		case OP_SUB:
-			current_index = diff_sub(old_tree, dtree, branch, current_index);
-			break;
-		case OP_MUL:
-			current_index = diff_mul(old_tree, dtree, branch, current_index);
-			break;
-		case OP_DIV:
-			current_index = diff_div(old_tree, dtree, branch, current_index);
-			break;
-		case OP_POW:
-			current_index = diff_pow(old_tree, dtree, branch, current_index);
-			break;
-		case OP_LN:
-			current_index = diff_ln(old_tree, dtree, branch, current_index);
-			break;
-		case OP_SIN:
-			current_index = diff_sin(old_tree, dtree, branch, current_index);
-			break;
-		case OP_COS:
-			current_index = diff_cos(old_tree, dtree, branch, current_index);
-			break;
-		case OP_SQRT:
-			current_index = diff_sqrt(old_tree, dtree, branch, current_index);
-			break;
-		case OP_DIFF:
-			current_index = diff_diff(old_tree, dtree, branch, current_index);
-			break;*/
 		#include "Operations.h"
-
 		default:
 			break;
 		}
@@ -310,14 +132,10 @@ int diff_abbreviated_logarithm(Diff_tree *dtree, long long index)
 	long long right_son = tree_right_son(dtree, index);
 	long long right_grandson = tree_right_son(dtree, right_son);
 	if (!(tree_get_type(dtree, left_son) == NUMBER && (exp(1) - tree_get_number(dtree, left_son)) <= epsilon))
-	{
 		return 0;
-	}
 
 	if (right_son == ABSENT && right_grandson == ABSENT || tree_get_type(dtree, right_grandson) != OPERATION || tree_get_type(dtree, right_son) != OPERATION)
-	{
 		return 0;
-	}
 
 	if (tree_get_operation(dtree, right_grandson) == OP_LN && tree_get_operation(dtree, right_son) == OP_MUL)
 	{
@@ -340,7 +158,7 @@ int diff_abbreviated_logarithm(Diff_tree *dtree, long long index)
 char diff_roll_up_consts(Diff_tree *dtree, long long index, char *changes)
 {
 	if (tree_if_lief(dtree, index))
-		return dtree->tree[index].type;
+		return tree_get_type(dtree, index);
 
 	long long left = tree_left_son(dtree, index);
 	long long right = tree_right_son(dtree, index);
@@ -352,51 +170,19 @@ char diff_roll_up_consts(Diff_tree *dtree, long long index, char *changes)
 
 	if (left_type == NUMBER && curr_op == OP_POW)
 	{
-		if (diff_abbreviated_logarithm(dtree, index))
-			return tree_get_type(dtree, index);
-		else
-			return OPERATION;
+		diff_abbreviated_logarithm(dtree, index);
+		return tree_get_type(dtree, index);
 	}
 
 	if (left_type == NUMBER && right_type == NUMBER)
 	{
 		double value = 0;
-		double left_value = dtree->tree[left].number;
-		double right_value = dtree->tree[right].number;
+		double left_value  = tree_get_number(dtree, left);
+		double right_value = tree_get_number(dtree, right);
 		
 		switch (curr_op)
 		{
-		/*case OP_PLUS:
-			value = left_value + right_value;
-			break;
-		case OP_SUB:
-			value = left_value - right_value;
-			break;
-		case OP_MUL:
-			value = left_value * right_value;
-			break;
-		case OP_DIV:
-			if (right_value)
-				value = left_value / right_value;
-			else
-				return OPERATION;
-			break;
-		case OP_LN:
-			value = log(right_value);
-			break;
-		case OP_SIN:
-			value = sin(right_value);
-			break;
-		case OP_COS:
-			value = cos(right_value);
-			break;
-		case OP_SQRT:
-			value = sqrt(right_value);
-			break;
-		case OP_POW:
-			break;*/
 		#include "Operations.h"
-
 		default:
 			break;
 		}
@@ -406,11 +192,9 @@ char diff_roll_up_consts(Diff_tree *dtree, long long index, char *changes)
 		tree_insert_number(dtree, &index_after, value);
 
 		*changes = 1;
-
-		return NUMBER;
 	}
 	
-	return dtree->tree[index].type;
+	return tree_get_type(dtree, index);
 }
 
 #undef DEFINE_OPS
@@ -420,14 +204,11 @@ char diff_left_operations_with_zero(Diff_tree* dtree, long long index)
 	long long left  = tree_left_son(dtree, index);
 	long long right = tree_right_son(dtree, index);
 
-	switch (dtree->tree[index].operation)
+	switch (tree_get_operation(dtree, index))
 	{
 	case OP_PLUS:
 		tree_remove_knot(dtree, index, right);
-		if (dtree->tree[right].type == VARIABLE)
-			return VARIABLE;
-		else
-			return OPERATION;
+		return tree_get_type(dtree, right);
 		break;
 	case OP_MUL:
 		tree_remove_knot(dtree, index, left);
@@ -554,9 +335,10 @@ char diff_simplificate_operations(Diff_tree* dtree, long long index, char *chang
 		
 		if (tree_get_type(dtree, left) == NUMBER)
 		{
-			if (dtree->tree[left].number == 0)
+			double number = tree_get_number(dtree, left);
+			if (number == 0)
 				type = diff_left_operations_with_zero(dtree, index);
-			else if (dtree->tree[left].number == 1)
+			else if (number == 1)
 				type = diff_left_operations_with_one(dtree, index);
 		
 			if (type != NOTHING)
@@ -568,9 +350,10 @@ char diff_simplificate_operations(Diff_tree* dtree, long long index, char *chang
 
 		if (tree_get_type(dtree, right) == NUMBER)
 		{
-			if (dtree->tree[right].number == 0)
+			double number = tree_get_number(dtree, right);
+			if (number == 0)
 				type = diff_right_operations_with_zero(dtree, index);
-			else if (dtree->tree[right].number == 1)
+			else if (number == 1)
 				type = diff_right_operations_with_one(dtree, index);
 		
 			if (type != NOTHING)

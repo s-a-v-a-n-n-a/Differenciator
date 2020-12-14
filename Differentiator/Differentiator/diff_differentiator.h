@@ -10,6 +10,8 @@
 
 const double epsilon = 0.000001;
 
+void			work_with_expression				();
+
 double			evaluate_expr						(Diff_tree* dtree, const long long index, double meaning);
 
 long long		diff_create_new_lief				(Diff_tree* dtree, const char type, double future_value, long long parent_index);

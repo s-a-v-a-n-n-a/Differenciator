@@ -184,7 +184,7 @@ Diff_tree *tree_read_from_file(const char* file_name)
 {
     FILE *input = text_read(file_name);
     Catalog *base = text_init(input);
-    printf("%s\n", base->buffer);
+    
     Diff_tree* new_tree = tree_read_from_base(base);
 
     text_delete(base);

@@ -4,16 +4,30 @@
 
 const char* phrase_bank[] =
 {
+	"{\\bf We are going to work with this expression, but before we'll simplify it:}\n",
+	"{\\bf So it looks like this:}\n",
 	"{\\bf Let's find deprivative for this expression:}\n",
 	"{\\bf So, I'll try to simplify it, let's believe in my success}\n",
 	"{\\bf Final deprivative is:}\n",
 	"{\\bf Let's see how does it look like:}\n",
-	"We pretend that we can count derivatives:\n",
+	"We pretend that we can calculate derivatives:\n",
 	"mATAN is my whole life!\n",
 	"With this program you don't need to be a genius to calculate the speed of me going mad\n",
 	"My name is Anya Savchuk but my dept calls me to calculate derivatives\n",
-	"The show must go on\n"
+	"The show must go on\n",
+	"Just do it!\n",
+	"It may look strange but I hope that's right\n"
 };
+
+void tree_tex_call()
+{
+	char temp[512];
+	sprintf(temp, "pdflatex %s > nul", DEFAULT_TEX_FILE_NAME);
+	system((char*)temp);
+
+	sprintf(temp, "%s", DEFAULT_PDF_FILE_NAME);
+	system((char*)temp);
+}
 
 void diff_print_introduction(FILE* out)
 {
@@ -36,10 +50,11 @@ void diff_print_introduction(FILE* out)
 
 	fprintf(out, "\\begin{center}\n");
 	fprintf(out, "{\\bf MIPT 2020 presents}\n\n");
-	fprintf(out, "{\\bf <<Bad mathematitian taking deprivatives>>}\n\n");
+	fprintf(out, "\n\n \\begin{Huge}\n{\\bf <<Bad mathematitian taking deprivatives>>}\n \\end{Huge} \n\n");
 	fprintf(out, "$\\copyright$ Annnna Savchuk\n");
 	fprintf(out, "\\end{center}\n");
 	fprintf(out, "%s", INTRODUCTION);
+	fprintf(out, "%s", PLAN);
 }
 
 void diff_print_phrase(FILE* out, int phrase)
@@ -81,9 +96,7 @@ void diff_print_formula_in_tex(Diff_tree* dtree, long long index, char end, int 
 
 	diff_print_phrase(out, phrase);
 	if (command == FORMULA)
-	{
 		diff_print_formula(out, dtree, index);
-	}
 	else
 		build_graph(out, dtree);
 
@@ -101,10 +114,9 @@ void build_graph(FILE* out, Diff_tree* dtree)
 		"\\begin{tikzpicture}\n"
 		"\\begin{axis}\n"
 		"\\addplot coordinates {\n");
-	for (double i = 1; i < 10; i += delta)
+	for (double i = MIN_X; i < MAX_X; i += delta)
 	{
 		double point = evaluate_expr(dtree, dtree->root_index, i);
-		//printf("%lg\n", point);
 		fprintf(out, "(%lg, %lg)\n", i, point);
 	}
 
@@ -112,14 +124,6 @@ void build_graph(FILE* out, Diff_tree* dtree)
 		"\\end{axis}\n"
 		"\\end{tikzpicture}\n"
 		"\\end{center}\n\n");
-}
-
-long long maximum(long long a, long long b)
-{
-	if (a > b)
-		return a;
-	else
-		return b;
 }
 
 long long diff_count_depth(Diff_tree* dtree, long long index)
@@ -166,6 +170,8 @@ void diff_print_tree_node(FILE* out, Diff_tree* dtree, long long index)
 		if (((parent_op == OP_LN || parent_op == OP_SIN || parent_op == OP_COS || parent_op == OP_SQRT) && index == tree_left_son(dtree, parent))
 			|| (parent_op == OP_DIFF && index == tree_right_son(dtree, parent)))
 			;
+		else if (dtree->tree[index].number < 0)
+			fprintf(out, "\\left( %lg \\right)", dtree->tree[index].number);
 		else
 			fprintf(out, "%lg", dtree->tree[index].number);
 	}
@@ -189,8 +195,8 @@ void diff_print_tree_node(FILE* out, Diff_tree* dtree, long long index)
 long long diff_print_casual_operations(FILE* out, Diff_tree* dtree, long long parent, long long son, long long* array_for_reductions, long long current_empty_index)
 {
 	tree_operations parent_op = tree_get_operation(dtree, parent);
-	tree_operations son_op = dtree->tree[son].operation;
-	if (tree_priorities[parent_op] <= tree_priorities[son_op] || ((parent_op == son_op) && (parent_op == OP_SUB)) || (son_op == OP_DIV))
+	tree_operations son_op = tree_get_operation(dtree, son);
+	if (tree_priorities[parent_op] < tree_priorities[son_op] || ((parent_op == son_op) && (parent_op == OP_SUB)))
 	{
 		fprintf(out, "\\left(");
 		current_empty_index = diff_print_tree_expression(out, dtree, son, array_for_reductions, current_empty_index);
@@ -251,13 +257,13 @@ long long diff_print_tree_expression(FILE* out, Diff_tree* dtree, long long inde
 	if (amount < MAX_EXPR_AMOUNT_TO_PRINT && amount > MIN_EXPR_AMOUNT_TO_PRINT && array_for_reductions)
 	{
 		array_for_reductions[current_empty_index++] = index;
-		fprintf(out, "%c", ('a' + current_empty_index - 1));
+		fprintf(out, "%c", ('A' + current_empty_index - 1));
 
 		return current_empty_index;
 	}
 	else
 	{
-		long long left = tree_left_son(dtree, index);
+		long long left  = tree_left_son(dtree, index);
 		long long right = tree_right_son(dtree, index);
 
 		tree_operations current_op = dtree->tree[index].operation;
@@ -294,12 +300,15 @@ void diff_print_expression_and_reductions(FILE* out, Diff_tree* dtree, long long
 
 	fprintf(out, "$$");
 	current_empty_index = diff_print_tree_expression(out, dtree, index, long_expressions, 0);
-	fprintf(out, "$$\n");
 
+	if (current_empty_index)
+		fprintf(out, ", $$ where\n");
+	else
+		fprintf(out, "$$\n");
 	for (int i = 0; i < current_empty_index; i++)
 	{
-		fprintf(out, "where %c is ", 'a' + i);
 		fprintf(out, "$$");
+		fprintf(out, "%c = ", 'A' + i);
 		diff_print_tree_expression(out, dtree, long_expressions[i], NULL, 0);
 		fprintf(out, "$$\n");
 	}
