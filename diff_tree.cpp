@@ -356,10 +356,21 @@ long long tree_get_depth(Diff_tree* dtree, long long index)
 
 int tree_if_lief(Diff_tree* dtree, long long index)
 {
-    if (index < ABSENT)
+    if (index <= ABSENT)
         return 0;
 
     if (tree_right_son(dtree, index) == ABSENT && tree_left_son(dtree, index) == ABSENT)
+        return 1;
+    else
+        return 0;
+}
+
+int tree_if_root(Diff_tree* dtree, long long index)
+{
+    if (index <= ABSENT)
+        return 0;
+
+    if (tree_parent(dtree, index) == ABSENT)
         return 1;
     else
         return 0;
@@ -478,6 +489,49 @@ tree_code tree_insert(Diff_tree* dtree, long long* index_after)
     dtree->first_free = dtree->tree[dtree->first_free].next;
 
     dtree->size++;
+
+    return TREE_OK;
+}
+
+tree_code tree_insert_before_minus_one(Diff_tree* dtree, long long* index_after, tree_operations operation)
+{
+    long long new_node_index = dtree->first_free;
+
+    tree_code checking = tree_check_index(dtree, *index_after);
+    if (checking != TREE_OK)
+        return checking;
+
+    if (tree_parent(dtree, *index_after) == ABSENT)
+    {
+        dtree->tree[dtree->first_free].parent = ABSENT;
+        dtree->root_index = dtree->first_free;
+    }
+    else
+    {
+        long long parent = tree_parent(dtree, *index_after);
+
+        dtree->tree[new_node_index].parent = tree_parent(dtree, *index_after);
+
+        if (*index_after == tree_left_son(dtree, parent))
+            dtree->tree[parent].left_son = new_node_index;
+        else
+            dtree->tree[parent].right_son = new_node_index;
+    }
+    dtree->tree[*index_after].parent = new_node_index;
+    dtree->tree[new_node_index].right_son = *index_after;
+
+    *index_after = dtree->first_free;
+    dtree->first_free = dtree->tree[dtree->first_free].next;
+
+    dtree->size++;
+
+    dtree->tree[new_node_index].type = OPERATION;
+
+    dtree->tree[new_node_index].number = NAN;
+    dtree->tree[new_node_index].variable = 0;
+    dtree->tree[new_node_index].operation = operation;
+
+    tree_insert_number(dtree, &new_node_index, -1);
 
     return TREE_OK;
 }
@@ -909,3 +963,5 @@ void tree_print_picture(Diff_tree* dtree, const char* picture_name)
 
     tree_dot_call(picture_name, PICTURE_EXPANSION);
 }
+
+
