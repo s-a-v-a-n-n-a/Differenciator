@@ -199,6 +199,41 @@ char diff_roll_up_consts(Diff_tree *dtree, long long index, char *changes)
 
 #undef DEFINE_OPS
 
+char diff_finding_minus_one(Diff_tree* dtree, long long index)
+{
+	if (tree_if_lief(dtree, index))
+	{
+		if (tree_get_type(dtree, index) == NUMBER && tree_get_number(dtree, index) == -1)
+		{
+			long long tmp_index = tree_parent(dtree, index);
+			while (tree_get_type(dtree, tmp_index) == OPERATION && ((tree_get_operation(dtree, tmp_index) == OP_MUL || tree_get_operation(dtree, tmp_index) == OP_DIV)) && !tree_if_root(dtree, tmp_index))
+				tmp_index = tree_parent(dtree, tmp_index);
+
+			if (tree_get_type(dtree, tmp_index) == OPERATION && tree_get_operation(dtree, tmp_index) == OP_PLUS)
+				dtree->tree[tmp_index].operation = OP_SUB;
+			else if (tree_get_type(dtree, tmp_index) == OPERATION && tree_get_operation(dtree, tmp_index) == OP_SUB)
+				dtree->tree[tmp_index].operation = OP_PLUS;
+			else if (tree_get_type(dtree, tmp_index) == OPERATION && tree_get_operation(dtree, tmp_index) < OP_SIN)
+				tree_insert_before_minus_one(dtree, &tmp_index, OP_MUL);
+			else return 0;
+
+			return 1;
+		}
+		
+		return 0;
+	}
+
+	long long left = tree_left_son(dtree, index);
+	long long right = tree_right_son(dtree, index);
+
+	if (diff_finding_minus_one(dtree, left))
+		tree_remove_knot(dtree, index, right);
+	else if (diff_finding_minus_one(dtree, right))
+		tree_remove_knot(dtree, index, left);
+
+	return 0;
+}
+
 char diff_left_operations_with_zero(Diff_tree* dtree, long long index)
 {
 	long long left  = tree_left_son(dtree, index);
@@ -370,6 +405,8 @@ void diff_simplificate(Diff_tree* dtree)
 {
 	char rolling_changes = 0;
 	char simplif_changes = 0;
+
+	diff_finding_minus_one(dtree, dtree->root_index);
 	do
 	{
 		rolling_changes = 0;
