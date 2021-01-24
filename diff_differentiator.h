@@ -20,6 +20,8 @@ void			diff								(Diff_tree* old_tree, Diff_tree* dtree, const long long branc
 
 char			diff_roll_up_consts					(Diff_tree* dtree, long long index, char *changes);
 
+char			diff_finding_minus_one				(Diff_tree* dtree, long long index);
+
 char			diff_left_operations_with_zero		(Diff_tree* dtree, long long index);
 char			diff_right_operations_with_zero		(Diff_tree* dtree, long long index);
 char			diff_left_operations_with_one		(Diff_tree* dtree, long long index);
