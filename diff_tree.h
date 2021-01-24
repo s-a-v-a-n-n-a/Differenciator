@@ -120,6 +120,7 @@ char             tree_get_variable                  (Diff_tree* dtree, long long
 long long        tree_get_depth                     (Diff_tree* dtree, long long index);
 
 int              tree_if_lief                       (Diff_tree* dtree, long long index);
+int              tree_if_root                       (Diff_tree* dtree, long long index);
 
 tree_code        tree_resize                        (Diff_tree* dtree, const double coefficient);
 
@@ -128,6 +129,7 @@ tree_code        tree_check_index                   (Diff_tree* dtree, long long
 tree_code        tree_change_operation              (Diff_tree* dtree, long long index, tree_operations operation);
 
 tree_code        tree_insert                        (Diff_tree *dtree, long long *index_after);
+tree_code        tree_insert_before_minus_one       (Diff_tree* dtree, long long* index_after, tree_operations operation);
 
 tree_code        tree_insert_number                 (Diff_tree *dtree, long long *index_after, double number);   
 tree_code        tree_insert_variable               (Diff_tree* dtree, long long* index_after, char variable);
