@@ -2,6 +2,8 @@
 
 #include <math.h>
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "Stack.h"
 #include "diff_work_with_file.h"

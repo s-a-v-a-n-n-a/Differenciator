@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdio.h>
+#include <stdlib.h>
+
 const size_t MAX_OP_LEN = 255;
 const size_t DEF_SIZE   = 4;
 const int    LETTERS    = 26;

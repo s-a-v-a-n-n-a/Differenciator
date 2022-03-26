@@ -1,5 +1,3 @@
-#pragma once
-
 #include "diff_work_with_file.h"
 
 size_t tree_count_nodes(Catalog* base)
@@ -128,7 +126,7 @@ Diff_tree* tree_read_from_base(Catalog *base)
 
         //printf("zero index %ld\n", current_index);
 
-        //Считываем число, не получилось - символ. Пока без sqrt!!!! 
+        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ sqrt!!!! 
         length_went = sscanf(current_stop, "%lg", &number);
         if (length_went == 0)
         {
@@ -173,7 +171,7 @@ Diff_tree* tree_read_from_base(Catalog *base)
         }
         current_stop = tree_skip_letters(current_stop);
         current_stop = tree_skip_space(current_stop, &length_went);
-        //current_stop++; //вроде необязательно
+        //current_stop++; //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         //printf("second index %ld\n", current_index);
     }
 
@@ -204,7 +202,7 @@ Diff_tree *tree_read_from_file(const char* file_name)
     }
 }*/
 
-//Что с этим делать, я пока не знаю
+//пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
 /*
 void tree_write_in_file(Diff_tree* dtree, long long index, FILE* file_name, int padding)
 {
