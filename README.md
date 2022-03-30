@@ -1,6 +1,6 @@
 **DOCUMENTATION**
 =================
-This is a program that calculates derived expressionы.
+This is a program that calculates derived expressions.
 
 **DESCRIPTION**
 ---------------
